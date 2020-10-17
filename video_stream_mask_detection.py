@@ -51,7 +51,7 @@ def predict_mask(frame, faceNN, maskNN):
 # constructing the argument parser
 arg_parse = argparse.ArgumentParser()
 arg_parse.add_argument("-f", "--face", type=str,
-	default="face_detector",
+	default="detector",
 	help="path to face detector model directory")
 arg_parse.add_argument("-m", "--model", type=str,
 	default="mask_detector.model",
@@ -63,7 +63,7 @@ args = vars(arg_parse.parse_args())
 # load our serialized face detector model from disk
 protoPath = os.path.sep.join([args["face"], "deploy.prototxt"])
 weightsPath = os.path.sep.join([args["face"],
-	"res10_300x300_ssd_iter_140000.caffemodel"])
+	"weights.caffemodel"])
 faceNN = cv2.dnn.readNet(protoPath, weightsPath)
 
 # load the detector model
@@ -72,24 +72,39 @@ maskNN = load_model(args["model"])
 # initializing the video stream
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
+#!/usr/bin/python3
+
+#start emoji here
+
+# load the overlay image. size should be smaller than video frame size
+img_1 = cv2.imread('smiling.png')
+img_2 = cv2.imread('frown.png')
+
+# Get Image dimensions
+img_height, img_width, _ = img_1.shape
+x = 0
+y = 0
 
 #going through each frame in the video
 while True:
 	frame = vs.read()
-	frame = imutils.resize(frame, width=400)
-
+	frame = imutils.resize(frame, width=800)
 	# detect faces in a frame and determine if they're wearing a mask
 	(locs, preds) = predict_mask(frame, faceNN, maskNN)
-
+	label = "" 
 	for (box, pred) in zip(locs, preds):
 		(startX, startY, endX, endY) = box
 		(mask, withoutMask) = pred
-		label = "Mask" if mask > withoutMask else "No Mask"
-		color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
+		label = "THANKS FOR WEARING A MASK!" if mask > withoutMask else "PLEASE WEAR A MASK!"
+		color = (255, 0, 0) if label == "THANKS FOR WEARING A MASK!" else (0, 0, 255)
 		cv2.putText(frame, label, (startX, startY - 10),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+			cv2.FONT_HERSHEY_SIMPLEX, 0.65, color, 2)
 		cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
-		
+	if label == "THANKS FOR WEARING A MASK!":
+		frame[ y:y+img_height , x:x+img_width ] = img_1
+	elif label == "PLEASE WEAR A MASK!":
+		frame[ y:y+img_height , x:x+img_width ] = img_2
+			
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
 

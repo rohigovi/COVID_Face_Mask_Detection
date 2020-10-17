@@ -32,7 +32,7 @@ args = vars(arg_Parse.parse_args())
 
 # initialize LR, BS and epochs
 Learn_Rate_Init = 1e-4
-epochs = 1
+epochs = 25
 batch_size = 30
 
 # initialize list of images and labels
