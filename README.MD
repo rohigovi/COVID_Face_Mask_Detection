@@ -4,7 +4,8 @@ The unchecked spread of COVID 19 has caused an extraordinary number of deaths ac
 Inspired by this statistic, I created a Face Mask detector that checks whether or not the people in a live video stream are wearing masks. I made the detector by training a conventional neural network on a dataset of over 4000 "Masked" and "Unmasked" images.
 
 DEMO
-![Alt Text](https://j.gifs.com/YW1j4K.gif)
+![Alt Text]
+(https://j.gifs.com/YW1j4K.gif)
 
 ​
 
